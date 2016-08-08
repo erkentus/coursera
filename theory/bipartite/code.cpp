@@ -30,6 +30,7 @@ bool is_bipartite(int start, const std::vector<std::vector<int>> &graph){
 				is_bipartite = false;
 			}
 		}
+		if (!is_bipartite) break;
 	}
 	return is_bipartite;
 }

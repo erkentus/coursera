@@ -6,6 +6,7 @@
 using namespace std;
 
 typedef long long ll;
+typedef pair<int,int> pii;
 
 int binary_search(int l, int r, const vector<int> &d, const vector<int> &a, int x){
 	if (l >= r) {
@@ -66,16 +67,32 @@ int main(int argc, char const *argv[])
 {
 	int n;
 	cin >> n;
-	vector<int> a(n);
-	vector<int> seq;
+	vector<pii> in;
+	vector<int> a;
 	for(int i = 0; i < n; i++){
-		cin >> a[i];
+		int x,y;
+		cin >> x >> y;
+		in.push_back(make_pair(x,y));
 	}
+	sort(in.begin(), in.end());
+	for(int i = 0; i < in.size(); i++){
+		cout << in[i].first << " " << in[i].second << endl;
+		if (i > 0 && in[i].first == in[i-1].first)
+			a.pop_back();
+		a.push_back(in[i].second);
+	}
+	// int n;
+	// cin >> n;
+	// vector<int> a(n);
+	vector<int> seq;
+	// for(int i = 0; i < n; i++){
+	// 	cin >> a[i];
+	// }
 	cout << "LIS length: " << LIS(a, seq) << endl;
 	cout << "Here is the actual LIS (from bigger to smaller)" << endl;
 	for(int i = 0; i < seq.size(); i++){
 		cout << seq[i] << " ";
 	}
-	cout << endl;
+	// cout << endl;
 	return 0;
 }

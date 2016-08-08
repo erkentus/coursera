@@ -243,87 +243,13 @@ const int MODULO = 1000000001;
 
 int main(){
   ios::sync_with_stdio(false);
-  // int TEST_CASES = 100;
-  // vector<int> types = {'+', '?', '-', 's'};
-  // for(int i = 0; i < TEST_CASES; i++){
-  //   set<int> vals;
-  //   ST t;
-  //   const int MAX_LENGTH = 1e5;
-  //   const int MAX_INT = 1e2;
-  //   int len = rand() % MAX_LENGTH;
-  //   ll last_sum_result = 0;
-  //   for(int j = 0; j < len; j++){
-  //     char type = types[rand() % 4];
-  //     switch (type) {
-  //       case '+' : {
-  //         ll x = rand() % MAX_INT;
-  //         vals.insert((x + last_sum_result) % MODULO);
-  //         t.insert((x + last_sum_result) % MODULO);
-  //       } break;
-  //       case '-' : {
-  //         ll x = rand() % MAX_INT;
-  //         vals.erase((x + last_sum_result) % MODULO);
-  //         t.erase((x + last_sum_result) % MODULO);
-  //       } break;            
-  //       case '?' : {
-  //         ll x = rand() % MAX_INT;
-  //         bool exist = (vals.find((x + last_sum_result) % MODULO) != vals.end());
-  //         bool stexist = t.exists((x + last_sum_result) % MODULO);
-  //         if (exist != stexist){
-  //           for(auto it = vals.begin(); it != vals.end(); it++){
-  //             cout << *it << " ";
-  //           }
-  //           t.exists(85);
-  //           cout << endl;
-  //           t.print();
-  //         }
-  //       } break;
-  //       case 's' : {
-  //         ll l = rand() % len-1;
-  //         ll r = (l == len-1) ? (len-1) : (l + (rand() % (len-l-1)));
-  //         long long res = t.sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
-  //         long long set_res = 0;
-  //         for(auto it = vals.lower_bound((l + last_sum_result) % MODULO); it != vals.upper_bound((r + last_sum_result) % MODULO); it++){
-  //           set_res += ll(*it);
-  //         }
-  //         assert(res==set_res);
-  //         last_sum_result = ll(res % MODULO);
-  //       }
-  //     }      
-  //   } 
-  // }
-  int n;
-  scanf("%d", &n);
-  int last_sum_result = 0;
   ST t;
-  for (int i = 0; i < n; i++) {
-    char buffer[10];
-    scanf("%s", buffer);
-    char type = buffer[0];
-    switch (type) {
-      case '+' : {
-        int x;
-        scanf("%d", &x);
-        t.insert((x + last_sum_result) % MODULO);
-      } break;
-      case '-' : {
-        int x;
-        scanf("%d", &x);
-        t.erase((x + last_sum_result) % MODULO);
-      } break;            
-      case '?' : {
-        int x;
-        scanf("%d", &x);
-        printf(t.exists((x + last_sum_result) % MODULO) ? "Found\n" : "Not found\n");
-      } break;
-      case 's' : {
-        int l, r;
-        scanf("%d %d", &l, &r);
-        long long res = t.sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
-        printf("%lld\n", res);
-        last_sum_result = int(res % MODULO);
-      }
-    }
-  }
+  t.insert(0);
+  t.insert(5);
+  t.insert(10);
+  t.insert(15);
+  t.insert(20);
+  cout << t.sum(0, 14) << endl; // 0 + 5 + 10
+  cout << t.sum(5, 20) << endl; // 5 + 10 + 15 + 20
   return 0;
 }

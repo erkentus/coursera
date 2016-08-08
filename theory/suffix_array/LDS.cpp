@@ -98,7 +98,7 @@ void suffix_array(vector<vector<int>> &P, const string &x){
 		}
 	}
 }
-
+//LDS - longest double suffix 
 
 int main(int argc, char const *argv[])
 {

@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <cmath> 
+#include <assert.h>
 
 using namespace std;
 
@@ -33,7 +34,7 @@ struct _tuple{
  * 	x initial string
  */
 
-const int d = 22;
+const int d = 24;
 
 vector<int> powers;
 
@@ -72,7 +73,7 @@ void suffix_array(vector<int> &SA, vector<vector<int>> &P, const string &x){
 	}
 	vector<_tuple> L(n, _tuple(0));
 	for(int j = 0; j < n; j++){
-		P[0][j] = x[j]-'a';
+		P[0][j] = x[j]-'a'; 
 	}
 	for(int i = 1; i <= nn; i++){
 		for(int j = 0; j < n; j++){
@@ -81,7 +82,7 @@ void suffix_array(vector<int> &SA, vector<vector<int>> &P, const string &x){
 			if (j + powers[i-1] < n){
 				L[j].second = P[i-1][j+powers[i-1]];
 			}
-			else L[j].second = -1;
+			else L[j].second = -1000;
 		}
 		sort(L.begin(), L.end(), [](const _tuple &a, const _tuple &b){
 			return a.first < b.first || (a.first == b.first && a.second < b.second);
@@ -104,19 +105,116 @@ void suffix_array(vector<int> &SA, vector<vector<int>> &P, const string &x){
 	}
 	// uncomment this to see the result
 	// for(int i = 0; i < n; i++){
-	// 	cout << i << " " << (x.substr(SA[i], x.length()-SA[i])) << endl;
+	// 	cout << i << " " << (x.substr(SA[i], x.length()-SA[i]))<< " " << SA[i] << endl;
 	// }
 }
+/**
+ * basically binary search in x, its SA and pattern to be matched
+ * @param x  [description]
+ * @param SA [description]
+ * @param p  [description]
+ */
 
+int find_range_l(const string &x, const vector<int> &SA, int l, int r, int shift, char chr){
+	if (l >= r) return (SA[l]+shift < x.length() && x[SA[l]+shift] == chr) ? l: -1;
+	int mid = (l+r)/2;
+	int imid = SA[mid] + shift;
+	if (imid < x.length()){
+		if (x[imid] >= chr){
+			return find_range_l(x,SA,l,mid,shift,chr);
+		}
+		else {
+			return find_range_l(x,SA,mid+1,r,shift,chr);
+		}
+	}
+	else {
+		find_range_l(x,SA,mid+1,r,shift,chr);
+	}
+}
+int find_range_r(const string &x, const vector<int> &SA, int l, int r, int shift, char chr){
+	if (l >= r) return (SA[l]+shift < x.length() && x[SA[l]+shift] == chr) ? l: -1;
+	int mid = ceil(static_cast<double>((l+r))/2.0);
+	int imid = SA[mid] + shift;
+	if (imid < x.length()){
+		if (x[imid] <= chr){
+			return find_range_r(x,SA,mid,r,shift,chr);
+		}
+		else {
+			return find_range_r(x,SA,l,mid-1,shift,chr);
+		}
+	}
+	else {
+		find_range_r(x,SA,mid,r,shift,chr);
+	}
+}
+
+string random_string( size_t length )
+{
+    auto randchar = []() -> char
+    {
+        const char charset[] =
+        "ATCG";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[ rand() % max_index ];
+    };
+    string str( length,0 );
+    generate_n( str.begin(), length, randchar );
+    return str;
+}
+
+void matching(const string &x, const vector<int> &SA, const string &p, const vector<size_t> &positions = {0ll}){
+	int l = 0;
+	int r = x.length()-1;
+	bool match = true;
+	for(int i = 0; i < p.length(); i++){ //i-th char of p is the one to be matched within range l..r in SA
+		char chr = p[i];
+		int nl = find_range_l(x,SA,l,r,i,chr);
+		int nr = find_range_r(x,SA,l,r,i,chr);
+		l = nl;
+		r = nr;
+		if (l == -1 || r == -1 || l > r) {
+			match = false;
+			break;
+		}
+	}
+	if (match){
+		// assert(r-l+1==positions.size());
+		for(int i = l; i <= r; i++){
+			cout << SA[i] << " ";
+			// assert(find(positions.begin(), positions.end(), SA[i]) != positions.end());
+		}
+	}
+	else{
+		// assert(positions.size() == 0);
+	}
+}
 
 int main(int argc, char const *argv[])
 {
+	ios::sync_with_stdio(false);
 	powers_of_two(d, powers);
 	string x;
 	cin >> x;
+	int n = x.length();
+	string y = x;
+	reverse(y.begin(), y.end());
+	x += '$' + y;
 	vector<int> SA;
 	vector<vector<int>> P;
 	suffix_array(SA, P, x);
-	cout << LCP(1,3,P,x) << endl;
-	return 0;
+	int ans = 1;
+	int _l = 0;
+	int _r = 0;
+	for(int i = 0; i < n;i++){
+		int _lcp = LCP(i, 2*n-i, P, x);
+		int _ans = 2*min({_lcp,n-i,i+1})-1;
+		if (_ans > ans) { _l = i - _ans/2; _r = i + _ans/2; ans = _ans;}
+		if (i > 0){
+			int __lcp = LCP(i, 2*n-i+1, P, x);
+			_ans = 2*min({__lcp,n-i,i});
+			if (_ans > ans) { _l = i - _ans/2; _r = i + _ans/2-1; ans = _ans;}
+		}
+	}
+	cout << x.substr(_l, _r-_l+1) << endl;
+	return ans;
 }
