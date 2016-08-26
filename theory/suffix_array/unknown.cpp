@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath> 
 #include <assert.h>
-#include <set>
 
 using namespace std;
 
@@ -163,7 +162,7 @@ string random_string( size_t length )
     return str;
 }
 
-void matching(const string &x, const vector<int> &SA, const string &p, set<int> &res){
+void matching(const string &x, const vector<int> &SA, const string &p, const vector<size_t> &positions = {0ll}){
 	int l = 0;
 	int r = x.length()-1;
 	bool match = true;
@@ -179,11 +178,14 @@ void matching(const string &x, const vector<int> &SA, const string &p, set<int> 
 		}
 	}
 	if (match){
+		// assert(r-l+1==positions.size());
 		for(int i = l; i <= r; i++){
-			res.insert(SA[i]);
+			cout << SA[i] << " ";
+			// assert(find(positions.begin(), positions.end(), SA[i]) != positions.end());
 		}
 	}
 	else{
+		// assert(positions.size() == 0);
 	}
 }
 
@@ -193,19 +195,26 @@ int main(int argc, char const *argv[])
 	powers_of_two(d, powers);
 	string x;
 	cin >> x;
+	int n = x.length();
+	string y = x;
+	reverse(y.begin(), y.end());
+	x += '$' + y;
 	vector<int> SA;
 	vector<vector<int>> P;
-	set<int> s;
 	suffix_array(SA, P, x);
-	int n;
-	cin >> n;
-	for(int i = 0; i < n; i++){
-		string p;
-		cin >> p;
-		matching(x, SA, p, s);
+	int ans = 1;
+	int _l = 0;
+	int _r = 0;
+	for(int i = 0; i < n;i++){
+		int _lcp = LCP(i, 2*n-i, P, x);
+		int _ans = 2*min({_lcp,n-i,i+1})-1;
+		if (_ans > ans) { _l = i - _ans/2; _r = i + _ans/2; ans = _ans;}
+		if (i > 0){
+			int __lcp = LCP(i, 2*n-i+1, P, x);
+			_ans = 2*min({__lcp,n-i,i});
+			if (_ans > ans) { _l = i - _ans/2; _r = i + _ans/2-1; ans = _ans;}
+		}
 	}
-	for(auto it: s){
-		cout << it << " ";
-	}
-	cout << endl;
+	cout << x.substr(_l, _r-_l+1) << endl;
+	return ans;
 }
