@@ -1,0 +1,17 @@
+/**
+ * advanced algorithms - course 5, UC San Diego
+ */
+
+/**
+ * week 1 - maxflow (network flow) 
+ 	-mincut
+ 	-residual network
+ 	-maximum flow
+ 	-edmonds-carp algorithm (ford-fulkerson implementation)
+ */
+
+/**
+ * week 2- linear programming
+ 	-solving set of linear equation maximizing (minimizing) target sum:
+ 		a_1*x_1 + a_2*x_2 + ... 
+ */
